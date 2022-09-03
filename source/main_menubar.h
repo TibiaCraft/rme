@@ -85,6 +85,7 @@ namespace MenuBar
 		MAP_CLEAN_HOUSE_ITEMS,
 		MAP_PROPERTIES,
 		MAP_STATISTICS,
+		MAP_SQLITE_EXPORT,
 		VIEW_TOOLBARS_BRUSHES,
 		VIEW_TOOLBARS_POSITION,
 		VIEW_TOOLBARS_SIZES,
@@ -241,6 +242,7 @@ public:
 	void OnMapCleanup(wxCommandEvent& event);
 	void OnMapProperties(wxCommandEvent& event);
 	void OnMapStatistics(wxCommandEvent& event);
+	void OnMapExport(wxCommandEvent& event);
 
 	// View Menu
 	void OnToolbars(wxCommandEvent& event);

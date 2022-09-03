@@ -115,6 +115,7 @@ MainMenuBar::MainMenuBar(MainFrame *frame) : frame(frame)
 	MAKE_ACTION(MAP_CLEAN_HOUSE_ITEMS, wxITEM_NORMAL, OnMapCleanHouseItems);
 	MAKE_ACTION(MAP_PROPERTIES, wxITEM_NORMAL, OnMapProperties);
 	MAKE_ACTION(MAP_STATISTICS, wxITEM_NORMAL, OnMapStatistics);
+	MAKE_ACTION(MAP_SQLITE_EXPORT, wxITEM_NORMAL, OnMapExport);
 
 	MAKE_ACTION(VIEW_TOOLBARS_BRUSHES, wxITEM_CHECK, OnToolbars);
 	MAKE_ACTION(VIEW_TOOLBARS_POSITION, wxITEM_CHECK, OnToolbars);
@@ -363,6 +364,7 @@ void MainMenuBar::Update()
 	EnableItem(MAP_CLEANUP, is_local);
 	EnableItem(MAP_PROPERTIES, is_local);
 	EnableItem(MAP_STATISTICS, is_local);
+	EnableItem(MAP_SQLITE_EXPORT, is_local);
 
 	EnableItem(NEW_VIEW, has_map);
 	EnableItem(ZOOM_IN, has_map);
@@ -1446,6 +1448,49 @@ void MainMenuBar::OnMapEditItems(wxCommandEvent& WXUNUSED(event))
 void MainMenuBar::OnMapEditMonsters(wxCommandEvent& WXUNUSED(event))
 {
 	;
+}
+
+void MainMenuBar::OnMapExport(wxCommandEvent& WXUNUSED(event)) {
+	if (!g_gui.IsEditorOpen())
+		return;
+
+
+	g_gui.CreateLoadBar("Exporting data...");
+	/*
+	std::ofstream os;
+	std::string fileName = "thais.json";
+	os.open(fileName);
+	os << "[\n";
+	os << "]\n";
+	os.close();
+	*/
+	g_gui.DestroyLoadBar();
+
+
+	wxDialog* dg = newd wxDialog(frame, wxID_ANY, "Map Statistics", wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
+	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
+	//wxTextCtrl* text_field = newd wxTextCtrl(dg, wxID_ANY, wxstr(os.str()), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
+	//text_field->SetMinSize(wxSize(400, 300));
+	//topsizer->Add(text_field, wxSizerFlags(5).Expand());
+
+	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
+	wxButton* export_button = newd wxButton(dg, wxID_OK, "Export as XML");
+	choicesizer->Add(export_button, wxSizerFlags(1).Center());
+	export_button->Enable(false);
+	choicesizer->Add(newd wxButton(dg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());
+	topsizer->Add(choicesizer, wxSizerFlags(1).Center());
+	dg->SetSizerAndFit(topsizer);
+	dg->Centre(wxBOTH);
+
+	int ret = dg->ShowModal();
+
+	if (ret == wxID_OK) {
+		//std::cout << "XML EXPORT";
+	}
+	else if (ret == wxID_CANCEL) {
+		//std::cout << "OK";
+	}
+
 }
 
 void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event))

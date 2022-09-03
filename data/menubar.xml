@@ -72,6 +72,7 @@
         <item name="$Cleanup..." action="MAP_CLEANUP" help="Removes all unknown items from the map."/>
         <item name="$Properties..." hotkey="Ctrl+P" action="MAP_PROPERTIES" help="Show and change the map properties."/>
         <item name="$Statistics" hotkey="F8" action="MAP_STATISTICS" help="Show map statistics."/>
+        <item name="Export $Map to sqlite" hotkey="F9" action="MAP_SQLITE_EXPORT" help="Export map to sqlite."/>
     </menu>
     <menu name="$Select">
         <item name="Replace Items on Selection" action="REPLACE_ON_SELECTION_ITEMS" help="Replace items on selected area."/>
