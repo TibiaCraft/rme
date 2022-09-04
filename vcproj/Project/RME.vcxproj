@@ -217,6 +217,7 @@
     <ClCompile Include="..\..\source\find_item_window.cpp" />
     <ClCompile Include="..\..\source\replace_items_window.cpp" />
     <ClCompile Include="..\..\source\welcome_dialog.cpp" />
+    <ClInclude Include="..\..\..\..\..\Downloads\sqlite-amalgamation-3390200\sqlite3.h" />
     <ClInclude Include="..\..\source\artprovider.h" />
     <ClInclude Include="..\..\source\main_toolbar.h" />
     <ClInclude Include="..\..\source\otml.h" />

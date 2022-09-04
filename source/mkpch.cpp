@@ -15,4 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
+static int createDB(const char* s);
+static int createTable(const char* s);
+
 #include "main.h"

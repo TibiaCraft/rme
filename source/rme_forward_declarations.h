@@ -18,6 +18,7 @@
 #ifndef RME_FORWARD_H
 #define RME_FORWARD_H
 
+
 class Map;
 class Tile;
 class TileLocation;

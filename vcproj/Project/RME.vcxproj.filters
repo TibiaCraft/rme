@@ -373,6 +373,7 @@
     <ClInclude Include="..\..\source\replace_items_window.h">
       <Filter>gui\dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Downloads\sqlite-amalgamation-3390200\sqlite3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\json\json_spirit_reader.cpp">

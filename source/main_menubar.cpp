@@ -36,6 +36,8 @@
 #include "materials.h"
 #include "live_client.h"
 #include "live_server.h"
+#include "sqlite3.h"
+
 
 BEGIN_EVENT_TABLE(MainMenuBar, wxEvtHandler)
 END_EVENT_TABLE()
@@ -1450,31 +1452,161 @@ void MainMenuBar::OnMapEditMonsters(wxCommandEvent& WXUNUSED(event))
 	;
 }
 
+
+static int createDB(const char* s) {
+	sqlite3* DB;
+	int exit = 0;
+	exit = sqlite3_open(s, &DB);
+
+	sqlite3_close(DB);
+	return 0;
+}
+
+static int insertData(const char* s)
+{
+	sqlite3* DB;
+	char* messageError;
+
+	std::string sql("INSERT INTO ITEMS (X, Y, Z, items) VALUES(10, 20, 35, 'Tampa');");
+
+	int exit = sqlite3_open(s, &DB);
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here */
+	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error in insertData." << std::endl;
+		sqlite3_free(messageError);
+	}
+	else
+		std::cout << "Records inserted Successfully!" << std::endl;
+
+	return 0;
+}
+static int createTable(const char* s) {
+	sqlite3* DB;
+	int exit = 0;
+
+	std::string sql = "CREATE TABLE IF NOT EXISTS ITEMS(ID INTEGER PRIMARY KEY AUTOINCREMENT, X INTEGER NOT NULL, Y INTEGER NOT NULL, Z INTEGER NOT NULL, items TEXT NOT NULL, ground TEXT);";
+
+	exit = sqlite3_open(s, &DB);
+	char* messageError;
+	exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+	if (exit != SQLITE_OK) {
+
+	}
+	else {
+		std::cout << "Table created succesffullt" << std::endl;
+		sqlite3_close(DB);
+	}
+	return 0;
+}
+
 void MainMenuBar::OnMapExport(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen())
 		return;
 
 
 	g_gui.CreateLoadBar("Exporting data...");
-	/*
-	std::ofstream os;
-	std::string fileName = "thais.json";
-	os.open(fileName);
-	os << "[\n";
-	os << "]\n";
-	os.close();
-	*/
+
+	const char* dir = "map.db";
+	sqlite3* DB;
+
+	createDB(dir);
+	createTable(dir);
+	insertData(dir);
+
+
+	char* messageError;
+
+	int exit = sqlite3_open(dir, &DB);
+
+
+	Map* map = &g_gui.GetCurrentMap();
+	int load_counter = 0;
+	std::ostringstream os;
+	os.setf(std::ios::fixed, std::ios::floatfield);
+	os.precision(2);
+	os << "Map statistics for the map \"" << map->getMapDescription() << "\"\n";
+
+	std::string sqlStarter = "INSERT INTO ITEMS (X, Y, Z, items, ground) VALUES ";
+	std::string sqlValues = "";
+	int valueCount = 0;
+	for (MapIterator mit = map->begin(); mit != map->end(); ++mit) {
+		Tile* tile = (*mit)->get();
+
+		if (tile->empty())
+			continue;
+
+		if (load_counter % 50 == 0) {
+			g_gui.SetLoadDone((unsigned int)(int64_t(load_counter) * 95ll / int64_t(map->getTileCount())));
+		}
+		 
+		std::string value = " (";
+		value.append(std::to_string(tile->getPosition().x));
+		value.append(", ");
+		value.append(std::to_string(tile->getPosition().y));
+		value.append(", ");
+		value.append(std::to_string(tile->getPosition().z));
+		value.append(", ");
+			
+		std::string items = "[";
+
+		for (ItemVector::const_iterator item_iter = tile->items.begin(); item_iter != tile->items.end(); ++item_iter) {
+			Item* item = *item_iter;
+			items.append("{ \"id\":" + std::to_string(item->getID()) + ", ");
+			items.append(" \"name\":\"" + item->getName() + "\" ");
+			items.append("},");
+		}
+
+		std::string ground = "";
+		if (tile->ground != NULL) {
+			ground.append("{");
+			ground.append("\"id\":" + std::to_string(tile->ground->getID()) + ", ");
+			ground.append("\"name\":\"" + tile->ground->getName() + "\" ");
+			ground.append("}");
+		}
+
+		items.append("]");
+		value.append("'");
+		value.append(items);
+		value.append("', ");
+		value.append("'");
+		value.append(ground); 
+		value.append("')");
+
+		 
+		if(valueCount < 10) {
+			valueCount++;
+			sqlValues.append(value);
+			sqlValues.append(",");
+		} else {
+			sqlValues.append(value);
+			valueCount = 0;
+			std::string sql = "";
+			sql.append(sqlStarter);
+			sql.append(sqlValues);
+			sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+			sqlValues.clear();
+		}
+
+		load_counter += 1;
+	}
+	std::string sql = "";
+	sql.append(sqlStarter);
+	sql.append(sqlValues);
+	sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+	sqlite3_close(DB);
+
 	g_gui.DestroyLoadBar();
 
 
-	wxDialog* dg = newd wxDialog(frame, wxID_ANY, "Map Statistics", wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
+	wxDialog* dg = newd wxDialog(frame, wxID_ANY, "Map Export", wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
-	//wxTextCtrl* text_field = newd wxTextCtrl(dg, wxID_ANY, wxstr(os.str()), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
-	//text_field->SetMinSize(wxSize(400, 300));
-	//topsizer->Add(text_field, wxSizerFlags(5).Expand());
+	wxTextCtrl* text_field = newd wxTextCtrl(dg, wxID_ANY, wxstr(os.str()), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
+	text_field->SetMinSize(wxSize(400, 300));
+	topsizer->Add(text_field, wxSizerFlags(5).Expand());
 
 	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* export_button = newd wxButton(dg, wxID_OK, "Export as XML");
+	wxButton* export_button = newd wxButton(dg, wxID_OK, "Close");
 	choicesizer->Add(export_button, wxSizerFlags(1).Center());
 	export_button->Enable(false);
 	choicesizer->Add(newd wxButton(dg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());

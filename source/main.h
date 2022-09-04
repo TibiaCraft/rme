@@ -17,7 +17,7 @@
 
 #ifndef RME_MAIN_H_
 #define RME_MAIN_H_
-
+// @TODO - move it somewhere
 #ifdef _WIN32
 #	define WIN32_LEAN_AND_MEAN
 #	ifdef _WIN32_WINNT
