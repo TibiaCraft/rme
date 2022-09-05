@@ -1,3 +1,15 @@
+What is this fork for?
+=============
+This is forked version Remeres Map Editor which received feature to export otmb map ground and tiles to SQLite database.
+The exported database can be used to build map in Minecraft using TibiaCraft [Tibia Craft Plugin](https://github.com/TibiaCraft/TibiaCraft) 
+
+How to export map?
+============
+
+1. Load map.
+2. Click Map > Export map to sqlite
+3. Wait a long time...
+
 What is this?
 =============
 
