@@ -9,6 +9,13 @@ How to export map?
 1. Load map.
 2. Click Map > Export map to sqlite
 3. Wait a long time...
+4. Map should be saved in application directory as "map.db"
+
+What to do next?
+============
+If you have enough power, you can rewrite it to save ground and items in different tables. For my usage that hacky way is enough.
+Also Any optimization prs are welcome =)
+
 
 What is this?
 =============
