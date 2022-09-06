@@ -1543,9 +1543,9 @@ void MainMenuBar::OnMapExport(wxCommandEvent& WXUNUSED(event)) {
 		std::string value = " (";
 		value.append(std::to_string(tile->getPosition().x));
 		value.append(", ");
-		value.append(std::to_string(tile->getPosition().y));
-		value.append(", ");
 		value.append(std::to_string(tile->getPosition().z));
+		value.append(", ");
+		value.append(std::to_string(tile->getPosition().y));
 		value.append(", ");
 			
 		std::string items = "[";
